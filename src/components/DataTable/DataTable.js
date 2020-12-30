@@ -11,7 +11,8 @@ class DataTable extends React.Component {
             headers: props.headers,
             data: props.data,
             sortBy: null,
-            descending: false
+            descending: false,
+            page: 0
         }
         this.noData = props.noData || 'داده ای جهت نمایش وجود ندارد!';
         this.width = props.width || '100%';
@@ -44,8 +45,9 @@ class DataTable extends React.Component {
     }
 
     renderTableContent = () => {
-        const { headers, data } = this.state;
-        const contentView = data.map((row, dtIndex) => {
+        const { headers, data, page } = this.state;
+        const paginatedData = data.slice(page * 5, page * 5 + 5);
+        const contentView = paginatedData.map((row, dtIndex) => {
             let tds = headers.map((header, index) => <td key={index}>{row[header.accessor]}</td>)
 
             return (<tr key={dtIndex}>{tds}</tr>);
@@ -65,7 +67,7 @@ class DataTable extends React.Component {
 
     onSort = (colTitle, desc) => {
         if (colTitle) {
-            let data = [...this.state.data];
+            let data = [...this.props.data];
             let descending = desc;
             if (colTitle === this.state.sortBy) {
                 descending = !this.state.descending;
@@ -98,25 +100,39 @@ class DataTable extends React.Component {
         }
     }
 
+    onPaging = (direction) => {
+        const page = this.state.page + direction;
+        if (page > -1 && page < Math.ceil(this.state.data.length / 5) + 1) {
+            this.setState({ page })
+        }
+    }
+
     renderTable = () => {
         const { title } = this.props;
         const headerView = this.renderTableHeader();
         const contentView = this.state.data.length > 0 ? this.renderTableContent() : this.renderNoData();
 
         return (
-            <table className="data-inner-table">
-                <caption className="data-table-caption">
-                    {title}
-                </caption>
-                <thead onClick={(e) => { this.onSort(e.target.dataset.col, false) }}>
-                    <tr>
-                        {headerView}
-                    </tr>
-                </thead>
-                <tbody>
-                    {contentView}
-                </tbody>
-            </table>
+            <>
+                <table className="data-inner-table">
+                    <caption className="data-table-caption">
+                        {title}
+                    </caption>
+                    <thead onClick={(e) => { this.onSort(e.target.dataset.col, false) }}>
+                        <tr>
+                            {headerView}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {contentView}
+                    </tbody>
+                </table>
+                <div>
+                    <button type="button" onClick={() => { this.onPaging(1) }}>بعدی</button>
+                    {this.state.page + 1}
+                    <button type="button" onClick={() => { this.onPaging(-1) }}>قبلی</button>
+                </div>
+            </>
         );
     }
 
