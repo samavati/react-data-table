@@ -55,6 +55,35 @@ class DataTable extends React.Component {
         );
     }
 
+    onSort = (e) => {
+        let data = [...this.state.data];
+        let colTitle = e.target.dataset.col;
+        let descending = !this.state.descending;
+
+        data.sort((a, b) => {
+            let sortVal = 0;
+            if (a[colTitle] < b[colTitle]) {
+                sortVal = -1;
+            } else if (a[colTitle] > b[colTitle]) {
+                sortVal = 1;
+            } else {
+                sortVal = 0;
+            }
+            if (descending) {
+                sortVal = sortVal * -1;
+            }
+            return sortVal;
+        });
+
+        console.log(data);
+
+        this.setState({
+            data,
+            sortBy: colTitle,
+            descending
+        })
+    }
+
     renderTable = () => {
         const { title } = this.props;
         const headerView = this.renderTableHeader();
