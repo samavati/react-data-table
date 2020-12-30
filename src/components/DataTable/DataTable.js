@@ -5,6 +5,7 @@ class DataTable extends React.Component {
 
     constructor(props) {
         super(props);
+        this.queryParams = new URLSearchParams(window.location.search);
 
         this.state = {
             headers: props.headers,
@@ -16,6 +17,10 @@ class DataTable extends React.Component {
         this.width = props.width || '100%';
     }
 
+    componentDidMount() {
+        this.onSort(this.queryParams.get('sort'), this.queryParams.get('descending') === 'true');
+    }
+
     renderTableHeader = () => {
         const { headers } = this.state;
         const headerView = headers.map((header, index) => {
@@ -23,6 +28,9 @@ class DataTable extends React.Component {
             let cleanTitle = header.accessor;
             // let width = header.width;
 
+            if (this.state.sortBy === header.accessor) {
+                title += this.state.descending ? '\u2193' : '\u2191';
+            }
             return (
                 <th key={cleanTitle} data-col={cleanTitle}>
                     <span data-col={cleanTitle} className="header-cell">
@@ -55,33 +63,39 @@ class DataTable extends React.Component {
         );
     }
 
-    onSort = (e) => {
-        let data = [...this.state.data];
-        let colTitle = e.target.dataset.col;
-        let descending = !this.state.descending;
-
-        data.sort((a, b) => {
-            let sortVal = 0;
-            if (a[colTitle] < b[colTitle]) {
-                sortVal = -1;
-            } else if (a[colTitle] > b[colTitle]) {
-                sortVal = 1;
-            } else {
-                sortVal = 0;
+    onSort = (colTitle, desc) => {
+        if (colTitle) {
+            let data = [...this.state.data];
+            let descending = desc;
+            if (colTitle === this.state.sortBy) {
+                descending = !this.state.descending;
             }
-            if (descending) {
-                sortVal = sortVal * -1;
-            }
-            return sortVal;
-        });
 
-        console.log(data);
+            data.sort((a, b) => {
+                let sortVal = 0;
+                if (a[colTitle] < b[colTitle]) {
+                    sortVal = -1;
+                } else if (a[colTitle] > b[colTitle]) {
+                    sortVal = 1;
+                } else {
+                    sortVal = 0;
+                }
+                if (descending) {
+                    sortVal = sortVal * -1;
+                }
+                return sortVal;
+            });
 
-        this.setState({
-            data,
-            sortBy: colTitle,
-            descending
-        })
+            this.queryParams.set("sort", colTitle);
+            this.queryParams.set("descending", descending);
+            window.history.replaceState({}, '', `${window.location.pathname}?${this.queryParams}`);
+
+            this.setState({
+                data,
+                sortBy: colTitle,
+                descending
+            })
+        }
     }
 
     renderTable = () => {
@@ -94,7 +108,7 @@ class DataTable extends React.Component {
                 <caption className="data-table-caption">
                     {title}
                 </caption>
-                <thead onClick={(e) => { this.onSort(e) }}>
+                <thead onClick={(e) => { this.onSort(e.target.dataset.col, false) }}>
                     <tr>
                         {headerView}
                     </tr>
