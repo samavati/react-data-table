@@ -2,16 +2,18 @@ import React from 'react';
 import './App.css';
 import { BinarySearchTree } from './BinarySerachTree';
 import DataTable from './components/DataTable/DataTable';
-import mock from './full-data.json';
+import mock from './data.json';
 
 class App extends React.Component {
 
   constructor(props) {
     super(props);
+    // START INIT BST ----------------------
     this.tree = new BinarySearchTree();
     mock.forEach(data => {
       this.tree.insert(data, data.date);
     });
+    // END INIT BST ----------------------
   }
 
   tableHeaders = [
@@ -25,10 +27,7 @@ class App extends React.Component {
   tableData = mock;
 
   state = {
-    table: {
-      headers: this.tableHeaders,
-      data: this.tableData
-    },
+    data: this.tableData,
     name: '',
     date: '',
     title: '',
@@ -78,7 +77,7 @@ class App extends React.Component {
     }
     // Serach All Parameters Except date --------------------------
 
-    this.setState({ table: { header: this.tableHeaders, data: newData } });
+    this.setState({ data: newData });
   }
 
   render() {
@@ -103,15 +102,10 @@ class App extends React.Component {
           </div>
         </div>
         <DataTable
-          className="data-table"
           title="لیست تغییرات انجام شده در اپلیکیشن دیوار"
-          pagination={{
-            enabled: true,
-            pageLenght: 5,
-          }}
-          width="100%"
-          headers={this.state.table.headers}
-          data={this.state.table.data}
+          pageLength="5"
+          headers={this.tableHeaders}
+          data={this.state.data}
           noData="داده ای جهت نمایش وجود ندارد!"
         />
       </div>
