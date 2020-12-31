@@ -5,7 +5,6 @@ class DataTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.queryParams = new URLSearchParams(window.location.search);
 
         this.state = {
             headers: props.headers,
@@ -19,7 +18,12 @@ class DataTable extends React.Component {
     }
 
     componentDidMount() {
-        this.onSort(this.queryParams.get('sort'), this.queryParams.get('descending') === 'true');
+        let queryParams = new URLSearchParams(window.location.search);
+        this.onSort(queryParams.get('sort'), queryParams.get('descending') === 'true');
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({ data: nextProps.data, page: 0 });
     }
 
     renderTableHeader = () => {
@@ -58,7 +62,7 @@ class DataTable extends React.Component {
     renderNoData = () => {
         return (
             <tr>
-                <td colSpan={this.props.headers.length}>
+                <td colSpan={this.state.headers.length}>
                     {this.noData}
                 </td>
             </tr>
@@ -88,9 +92,15 @@ class DataTable extends React.Component {
                 return sortVal;
             });
 
-            this.queryParams.set("sort", colTitle);
-            this.queryParams.set("descending", descending);
-            window.history.replaceState({}, '', `${window.location.pathname}?${this.queryParams}`);
+            // Manipulate URL SERACH PARAMS
+            let queryParams = new URLSearchParams(window.location.search);
+            for (let key of queryParams.keys()) {
+                queryParams.set(key, queryParams.get(key))
+            }
+            queryParams.set("sort", colTitle);
+            queryParams.set("descending", descending);
+            window.history.replaceState({}, '', `${window.location.pathname}?${queryParams}`);
+            // Manipulate URL SERACH PARAMS
 
             this.setState({
                 data,
