@@ -147,10 +147,15 @@ class DataTable extends React.Component {
                         {contentView}
                     </tbody>
                 </table>
-                <div>
-                    <button type="button" onClick={() => { this.onPaging(1) }}>بعدی</button>
-                    {this.state.page + 1}
-                    <button type="button" onClick={() => { this.onPaging(-1) }}>قبلی</button>
+                <div className="pagination">
+                    <div>
+                        <button type="button" onClick={() => { this.onPaging(1) }}>بعدی</button>
+                        {this.state.page + 1}
+                        <button type="button" onClick={() => { this.onPaging(-1) }}>قبلی</button>
+                    </div>
+                    <div>
+                        نمایش {this.state.page * 5 + 1} تا {this.state.data.length > this.props.pageLength ? (this.state.page * 5 + +this.props.pageLength) : this.state.data.length} از {this.state.data.length}
+                    </div>
                 </div>
             </>
         );

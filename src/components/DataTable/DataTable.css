@@ -35,3 +35,8 @@
   font-weight: bold;
   font-size: 1.2em;
 }
+
+.pagination {
+  display: flex;
+  justify-content: space-around;
+}

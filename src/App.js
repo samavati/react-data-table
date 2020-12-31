@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { BinarySearchTree } from './BinarySerachTree';
 import DataTable from './components/DataTable/DataTable';
-import mock from './data.json';
+import mock from './full-data.json';
 
 class App extends React.Component {
 
