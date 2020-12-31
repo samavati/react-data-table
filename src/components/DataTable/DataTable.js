@@ -112,7 +112,7 @@ class DataTable extends React.Component {
 
     onPaging = (direction) => {
         const page = this.state.page + direction;
-        if (page > -1 && page < Math.ceil(this.state.data.length / 5) + 1) {
+        if (page > -1 && page < Math.ceil(this.state.data.length / 5)) {
             this.setState({ page })
         }
     }
